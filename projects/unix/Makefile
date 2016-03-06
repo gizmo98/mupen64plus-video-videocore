@@ -153,7 +153,7 @@ SOURCE = \
     $(SRCDIR)/VCUtils.cpp \
     $(SRCDIR)/VI.cpp
 
-SOURCE = $(SRCDIR)/xxhash.c
+SOURCE += $(SRCDIR)/xxhash.c
 
 SHADERS = \
     $(SRCDIR)/blit.fs.glsl \
@@ -195,9 +195,6 @@ install: $(TARGET)
 	$(INSTALL) -d "$(DESTDIR)$(SHAREDIR)"
 	$(INSTALL) -m 0644 "../../data/videocore.conf" "$(DESTDIR)$(SHAREDIR)"
 	$(INSTALL) -m 0644 "$(SHADERS)" "$(DESTDIR)$(SHAREDIR)"
-
-clean:
-	$(RM) -r $(OBJDIR) $(TARGET)
 
 uninstall:
 	$(RM) "$(DESTDIR)$(PLUGINDIR)/$(TARGET)"
