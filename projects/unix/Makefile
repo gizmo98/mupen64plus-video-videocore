@@ -34,7 +34,7 @@ endif
 OPTFLAGS ?= -flto
 WARNFLAGS ?= -Wall -Wno-parentheses
 CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -std=c++11 -ffast-math -fno-strict-aliasing -fvisibility=hidden -I../../src
-CXXFLAGS += -fvisibility-inlines-hidden -std=c++11
+CXXFLAGS += -Wall -Wno-parentheses -fvisibility-inlines-hidden -std=c++11
 LDFLAGS += $(SHARED)
 
 # test for essential build dependencies
