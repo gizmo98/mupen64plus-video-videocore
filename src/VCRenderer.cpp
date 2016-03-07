@@ -88,7 +88,7 @@ void VCRenderer_CompileShader(GLuint *shader, GLint shaderType, const char *file
     free(path);
 
     *shader = glCreateShader(shaderType);
-    GL(glShaderSource(*shader, 1, &source, NULL));
+    GL(glShaderSource(*shader, 1, (const char **)&source, NULL));
     GL(glCompileShader(*shader));
 }
 
