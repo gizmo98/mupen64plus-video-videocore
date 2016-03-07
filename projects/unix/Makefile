@@ -17,15 +17,18 @@ ifeq ($(shell uname -m),armv7l)
     LDFLAGS += -Wl,-version-script,$(SRCDIR)/video_api_export.ver
     SHARED = -shared
     SO_EXTENSION = so
+    PIC ?= 1
 else
     ifeq ($(shell uname -o),Msys)
         LDLIBS+=-lglew32 -lopengl32
         LDFLAGS+=-Wl,-Bsymbolic
         SO_EXTENSION = dll
+        PIC ?= 0
     else
         ifeq ($(shell uname),Darwin)
             LDLIBS += -framework OpenGL
             SO_EXTENSION = dylib
+            PIC ?= 0
         endif
     endif
 endif
@@ -36,6 +39,14 @@ WARNFLAGS ?= -Wall -Wno-parentheses
 CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -std=c++11 -ffast-math -fno-strict-aliasing -fvisibility=hidden -I../../src
 CXXFLAGS += -Wall -Wno-parentheses -fvisibility-inlines-hidden -std=c++11
 LDFLAGS += $(SHARED)
+
+# Since we are building a shared library, we must compile with -fPIC on some architectures
+# On 32-bit x86 systems we do not want to use -fPIC because we don't have to and it has a big performance penalty on this arch
+ifeq ($(PIC), 1)
+  CFLAGS += -fPIC
+else
+  CFLAGS += -fno-PIC
+endif
 
 # test for essential build dependencies
 ifeq ($(origin PKG_CONFIG), undefined)
