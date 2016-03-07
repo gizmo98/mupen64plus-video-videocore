@@ -10,6 +10,10 @@
 #include "VCUtils.h"
 #include "toml.h"
 
+#ifdef __linux__
+#include <linux/limits.h>
+#endif
+
 #define VC_DEFAULT_DISPLAY_WIDTH        1920
 #define VC_DEFAULT_DISPLAY_HEIGHT       1080
 #define VC_DEFAULT_DEBUG_DISPLAY        false
@@ -74,10 +78,10 @@ void VCConfig_Read(VCConfig *config) {
         if (home == NULL)
             home = ".";
         snprintf(path, PATH_MAX, "%s/.config/mupen64plus/videocore.conf", home);
-        input = std::ifstream(path);
+        input.open(path);
     } else {
         snprintf(path, PATH_MAX, "%s/mupen64plus/videocore.conf", configHome);
-        input = std::ifstream(path);
+        input.open(path);
     }
 
     if (input.fail()) {
@@ -96,7 +100,7 @@ void VCConfig_Read(VCConfig *config) {
                 return;
             }
             snprintf(path, PATH_MAX, "%s/mupen64plus/videocore.conf", configDir);
-            input = std::ifstream(path);
+            input.open(path);
         } while (input.fail());
     }
     free(path);
