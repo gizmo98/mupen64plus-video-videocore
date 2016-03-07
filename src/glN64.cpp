@@ -17,7 +17,17 @@
 char		pluginName[] = "mupen64plus-video-videocore";
 char		*screenDirectory;
 
-void (*CheckInterrupts)( void );
+ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
+ptr_ConfigGetUserConfigPath     ConfigGetUserConfigPath = NULL;
+ptr_VidExt_GL_SwapBuffers       CoreVideo_GL_SwapBuffers = NULL;
+ptr_VidExt_SetVideoMode         CoreVideo_SetVideoMode = NULL;
+ptr_VidExt_GL_SetAttribute      CoreVideo_GL_SetAttribute = NULL;
+ptr_VidExt_GL_GetAttribute      CoreVideo_GL_GetAttribute = NULL;
+ptr_VidExt_Init                 CoreVideo_Init = NULL;
+ptr_VidExt_Quit                 CoreVideo_Quit = NULL;
+
+void        (*CheckInterrupts)( void );
+void        (*renderCallback)() = NULL;
 
 extern "C" {
 
@@ -47,13 +57,13 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType,
     if (PluginType != NULL)
         *PluginType = M64PLUGIN_GFX;
     if (PluginVersion != NULL)
-        *PluginVersion = 0x103;
+        *PluginVersion = PLUGIN_VERSION;
     if (APIVersion != NULL)
-        *APIVersion = VIDEO_PLUGIN_API_VERSION;
-    if (PluginType != NULL)
-        *PluginType = M64PLUGIN_GFX;
+        *APIVersion = PLUGIN_API_VERSION;
     if (PluginNamePtr != NULL)
-        *PluginNamePtr = "mupen64plus-video-glvideocore";
+        *PluginNamePtr = PLUGIN_NAME;
+    if (Capabilities != NULL)
+        *Capabilities = 0;
     return M64ERR_SUCCESS;
 }
 
@@ -189,6 +199,15 @@ EXPORT void CALL FBGetFrameBufferInfo(void *p) {
 EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Context,
                                    void (*DebugCallback)(void *, int, const char *))
 {
+    ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath) dlsym(CoreLibHandle, "ConfigGetSharedDataFilepath");
+    ConfigGetUserConfigPath     = (ptr_ConfigGetUserConfigPath)     dlsym(CoreLibHandle, "ConfigGetUserConfigPath");
+    CoreVideo_GL_SwapBuffers    = (ptr_VidExt_GL_SwapBuffers)       dlsym(CoreLibHandle, "VidExt_GL_SwapBuffers");
+    CoreVideo_SetVideoMode      = (ptr_VidExt_SetVideoMode)         dlsym(CoreLibHandle, "VidExt_SetVideoMode");
+    CoreVideo_GL_SetAttribute   = (ptr_VidExt_GL_SetAttribute)      dlsym(CoreLibHandle, "VidExt_GL_SetAttribute");
+    CoreVideo_GL_GetAttribute   = (ptr_VidExt_GL_GetAttribute)      dlsym(CoreLibHandle, "VidExt_GL_GetAttribute");
+    CoreVideo_Init              = (ptr_VidExt_Init)                 dlsym(CoreLibHandle, "VidExt_Init");
+    CoreVideo_Quit              = (ptr_VidExt_Quit)                 dlsym(CoreLibHandle, "VidExt_Quit");
+
     VCConfig_Read(VCConfig_SharedConfig());
     return M64ERR_SUCCESS;
 }
