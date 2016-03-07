@@ -205,7 +205,12 @@ install: $(TARGET)
 	$(INSTALL) -m 0644 $(INSTALL_STRIP_FLAG) $(TARGET) "$(DESTDIR)$(PLUGINDIR)"
 	$(INSTALL) -d "$(DESTDIR)$(SHAREDIR)"
 	$(INSTALL) -m 0644 "../../data/videocore.conf" "$(DESTDIR)$(SHAREDIR)"
-	$(INSTALL) -m 0644 "$(SHADERS)" "$(DESTDIR)$(SHAREDIR)"
+	$(INSTALL) -m 0644 "$(SRCDIR)/blit.fs.glsl" "$(DESTDIR)$(SHAREDIR)"
+	$(INSTALL) -m 0644 "$(SRCDIR)/blit.vs.glsl" "$(DESTDIR)$(SHAREDIR)"
+	$(INSTALL) -m 0644 "$(SRCDIR)/debug.fs.glsl" "$(DESTDIR)$(SHAREDIR)"
+	$(INSTALL) -m 0644 "$(SRCDIR)/debug.vs.glsl" "$(DESTDIR)$(SHAREDIR)"
+	$(INSTALL) -m 0644 "$(SRCDIR)/n64.fs.glsl" "$(DESTDIR)$(SHAREDIR)"
+	$(INSTALL) -m 0644 "$(SRCDIR)/n64.vs.glsl" "$(DESTDIR)$(SHAREDIR)"
 
 uninstall:
 	$(RM) "$(DESTDIR)$(PLUGINDIR)/$(TARGET)"
