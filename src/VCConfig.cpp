@@ -14,6 +14,10 @@
 #include <linux/limits.h>
 #endif
 
+#ifdef VC
+#include <bcm_host.h>
+#endif
+
 #define VC_DEFAULT_DISPLAY_WIDTH        1920
 #define VC_DEFAULT_DISPLAY_HEIGHT       1080
 #define VC_DEFAULT_DEBUG_DISPLAY        false
@@ -114,8 +118,20 @@ void VCConfig_Read(VCConfig *config) {
     }
 
     const toml::Value &topValue = parseResult.value;
+#ifdef VC
+    u32 fb_width;
+    u32 fb_height;
+    bcm_host_init();
+    if (graphics_get_display_size(0 /* LCD */, &fb_width, &fb_height) < 0)
+        printf("ERROR: Failed to get display size\n");
+    else {
+        config->displayWidth = fb_width;
+        config->displayHeight = fb_height;
+    }
+#else
     config->displayWidth = VCConfig_GetInt(topValue, "display.width", VC_DEFAULT_DISPLAY_WIDTH);
     config->displayHeight = VCConfig_GetInt(topValue, "display.height", VC_DEFAULT_DISPLAY_HEIGHT);
+#endif
     config->debugDisplay = VCConfig_GetBool(topValue,
                                             "debug.display",
                                             VC_DEFAULT_DEBUG_DISPLAY);

@@ -12,7 +12,7 @@ LIBS=
 ifeq ($(shell uname -m),armv7l)
     LDLIBS += -ldl
     LDLIBS += -L/opt/vc/lib -lGLESv2 -lEGL
-    CFLAGS += -DHAVE_OPENGLES2 -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/vmcs_host/linux
+    CFLAGS += -DHAVE_OPENGLES2 -DVC -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/vmcs_host/linux
     LDFLAGS += -Wl,-Bsymbolic
     LDFLAGS += -Wl,-version-script,$(SRCDIR)/video_api_export.ver
     SHARED = -shared
