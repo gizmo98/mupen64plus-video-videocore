@@ -11,6 +11,7 @@
 #include "m64p_types.h"
 #include "m64p_common.h"
 #include "m64p_plugin.h"
+#include <dlfcn.h>
 
 #define MI_INTR_SP 0x01
 #define MI_INTR_DP 0x20
