@@ -1,8 +1,11 @@
 #ifndef GLN64_H
 #define GLN64_H
 
-#include "m64p_config.h"
 #include "stdio.h"
+#define M64P_PLUGIN_PROTOTYPES 1
+#include "typedefs.h"
+#include "m64p_config.h"
+#include "m64p_plugin.h"
 #include "m64p_vidext.h"
 
 //#define DEBUG

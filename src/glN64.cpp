@@ -7,6 +7,9 @@
 #include "VI.h"
 #include "Combiner.h"
 #include "VCConfig.h"
+#define M64P_PLUGIN_PROTOTYPES 1
+#include "m64p_types.h"
+#include "m64p_common.h"
 #include "m64p_plugin.h"
 
 #define MI_INTR_SP 0x01
