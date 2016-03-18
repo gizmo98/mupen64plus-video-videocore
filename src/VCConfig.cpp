@@ -119,8 +119,8 @@ void VCConfig_Read(VCConfig *config) {
 
     const toml::Value &topValue = parseResult.value;
 #ifdef VC
-    u32 fb_width;
-    u32 fb_height;
+    unsigned int fb_width;
+    unsigned int fb_height;
     bcm_host_init();
     if (graphics_get_display_size(0 /* LCD */, &fb_width, &fb_height) < 0)
         printf("ERROR: Failed to get display size\n");
