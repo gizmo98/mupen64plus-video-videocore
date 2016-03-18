@@ -331,6 +331,14 @@ VCRenderer *VCRenderer_SharedRenderer() {
 static int VCRenderer_ThreadMain(void *userData) {
     VCRenderer *renderer = (VCRenderer *)userData;
 
+    SDL_ShowCursor(0);
+
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
     int flags = SDL_WINDOW_OPENGL;
 #ifdef HAVE_OPENGLES2
     flags |= SDL_WINDOW_FULLSCREEN;
