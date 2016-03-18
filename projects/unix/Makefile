@@ -205,6 +205,7 @@ install: $(TARGET)
 	$(INSTALL) -m 0644 $(INSTALL_STRIP_FLAG) $(TARGET) "$(DESTDIR)$(PLUGINDIR)"
 	$(INSTALL) -d "$(DESTDIR)$(SHAREDIR)"
 	$(INSTALL) -m 0644 "../../data/videocore.conf" "$(DESTDIR)$(SHAREDIR)"
+	$(INSTALL) -d "/usr/local/share/mupen64plus/videocore/"
 	$(INSTALL) -m 0644 "$(SRCDIR)/blit.fs.glsl" "/usr/local/share/mupen64plus/videocore/"
 	$(INSTALL) -m 0644 "$(SRCDIR)/blit.vs.glsl" "/usr/local/share/mupen64plus/videocore/"
 	$(INSTALL) -m 0644 "$(SRCDIR)/debug.fs.glsl" "/usr/local/share/mupen64plus/videocore/"
