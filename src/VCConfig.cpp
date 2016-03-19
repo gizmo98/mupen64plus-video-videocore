@@ -72,6 +72,18 @@ static char *VCConfig_GetString(const toml::Value &topValue,
 }
 
 void VCConfig_Read(VCConfig *config) {
+#ifdef VC
+    unsigned int fb_width;
+    unsigned int fb_height;
+    bcm_host_init();
+    if (graphics_get_display_size(0 /* LCD */, &fb_width, &fb_height) < 0)
+        std::cerr << "error: failed to get display size" << std::endl;
+    else {
+        config->displayWidth = fb_width;
+        config->displayHeight = fb_height;
+    }
+#endif
+
     char *path = (char *)malloc(PATH_MAX + 1);
 
     std::ifstream input;
@@ -118,17 +130,7 @@ void VCConfig_Read(VCConfig *config) {
     }
 
     const toml::Value &topValue = parseResult.value;
-#ifdef VC
-    unsigned int fb_width;
-    unsigned int fb_height;
-    bcm_host_init();
-    if (graphics_get_display_size(0 /* LCD */, &fb_width, &fb_height) < 0)
-        printf("ERROR: Failed to get display size\n");
-    else {
-        config->displayWidth = fb_width;
-        config->displayHeight = fb_height;
-    }
-#else
+#ifndef VC
     config->displayWidth = VCConfig_GetInt(topValue, "display.width", VC_DEFAULT_DISPLAY_WIDTH);
     config->displayHeight = VCConfig_GetInt(topValue, "display.height", VC_DEFAULT_DISPLAY_HEIGHT);
 #endif
