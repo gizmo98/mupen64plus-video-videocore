@@ -9,7 +9,7 @@ LD=g++
 LDFLAGS=
 LIBS=
 
-ifeq ($(shell uname -m),armv7l)
+ifneq (,$(findstring armv,$(shell uname -m)))
     LDLIBS += -ldl
     LDLIBS += -L/opt/vc/lib -lGLESv2 -lEGL
     CFLAGS += -DHAVE_OPENGLES2 -DVC -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/vmcs_host/linux
