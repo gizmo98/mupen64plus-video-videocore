@@ -29,6 +29,7 @@ void gDPSetOtherMode( u32 mode0, u32 mode1 )
 	gDP.otherMode.l = mode1;
 
 	gDP.changed |= CHANGED_RENDERMODE | CHANGED_CYCLETYPE | CHANGED_ALPHACOMPARE;
+    VCRenderer_InvalidateCachedSubprogramID(VCRenderer_SharedRenderer());
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetOtherMode( %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s, %s | %s | %s%s%s%s%s | %s | %s%s%s );\n",
@@ -84,6 +85,7 @@ void gDPSetCycleType( u32 type )
 	gDP.otherMode.cycleType = type;
 
 	gDP.changed |= CHANGED_CYCLETYPE;
+    VCRenderer_InvalidateCachedSubprogramID(VCRenderer_SharedRenderer());
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetCycleType( %s );\n",
@@ -231,6 +233,7 @@ void gDPSetCombine( s32 muxs0, s32 muxs1 )
 	gDP.combine.muxs1 = muxs1;
 
 	gDP.changed |= CHANGED_COMBINE;
+    VCRenderer_InvalidateCachedSubprogramID(VCRenderer_SharedRenderer());
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetCombine( %s, %s, %s, %s, %s, %s, %s, %s,\n",
@@ -318,12 +321,13 @@ void gDPSetDepthImage( u32 address )
 
 void gDPSetEnvColor( u32 r, u32 g, u32 b, u32 a )
 {
-	gDP.envColor.r = r * 0.0039215689f;
-	gDP.envColor.g = g * 0.0039215689f;
-	gDP.envColor.b = b * 0.0039215689f;
-	gDP.envColor.a = a * 0.0039215689f;
+	gDP.envColor.r = r;
+	gDP.envColor.g = g;
+	gDP.envColor.b = b;
+	gDP.envColor.a = a;
 
 	gDP.changed |= CHANGED_COMBINE_COLORS;
+    VCRenderer_InvalidateCachedSubprogramID(VCRenderer_SharedRenderer());
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetEnvColor( %i, %i, %i, %i );\n",
@@ -377,13 +381,14 @@ void gDPSetFillColor( u32 c )
 void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
 {
 	gDP.primColor.m = m;
-	gDP.primColor.l = l * 0.0039215689f;
-	gDP.primColor.r = r * 0.0039215689f;
-	gDP.primColor.g = g * 0.0039215689f;
-	gDP.primColor.b = b * 0.0039215689f;
-	gDP.primColor.a = a * 0.0039215689f;
+	gDP.primColor.l = l;
+	gDP.primColor.r = r;
+	gDP.primColor.g = g;
+	gDP.primColor.b = b;
+	gDP.primColor.a = a;
 
 	gDP.changed |= CHANGED_COMBINE_COLORS;
+    VCRenderer_InvalidateCachedSubprogramID(VCRenderer_SharedRenderer());
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetPrimColor( %i, %i, %i, %i, %i, %i );\n",
@@ -714,16 +719,15 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
     VCBlendFlags blendFlags = {
         false,
         false,
-        false,
-        false,
+        VCRenderer_GetCurrentGlobalBlendMode(VC_TRIANGLE_MODE_RECT_FILL),
         { { gSP.viewport.x, gSP.viewport.y }, { gSP.viewport.width, gSP.viewport.height } }
     };
-    VCRenderer_AddVertex(renderer, &n64Vertices[0], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[1], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[3], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[1], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[2], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[3], &blendFlags);
+    VCRenderer_AddVertex(renderer, &n64Vertices[0], &blendFlags, VC_TRIANGLE_MODE_RECT_FILL, 0.0);
+    VCRenderer_AddVertex(renderer, &n64Vertices[1], &blendFlags, VC_TRIANGLE_MODE_RECT_FILL, 0.0);
+    VCRenderer_AddVertex(renderer, &n64Vertices[3], &blendFlags, VC_TRIANGLE_MODE_RECT_FILL, 0.0);
+    VCRenderer_AddVertex(renderer, &n64Vertices[1], &blendFlags, VC_TRIANGLE_MODE_RECT_FILL, 0.0);
+    VCRenderer_AddVertex(renderer, &n64Vertices[2], &blendFlags, VC_TRIANGLE_MODE_RECT_FILL, 0.0);
+    VCRenderer_AddVertex(renderer, &n64Vertices[3], &blendFlags, VC_TRIANGLE_MODE_RECT_FILL, 0.0);
 
 	if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
@@ -805,16 +809,39 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
     VCBlendFlags blendFlags = {
         false,
         false,
-        false,
-        false,
+        VCRenderer_GetCurrentGlobalBlendMode(VC_TRIANGLE_MODE_TEXTURE_RECTANGLE),
         { { gSP.viewport.x, gSP.viewport.y }, { gSP.viewport.width, gSP.viewport.height } }
     };
-    VCRenderer_AddVertex(renderer, &n64Vertices[0], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[1], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[3], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[1], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[2], &blendFlags);
-    VCRenderer_AddVertex(renderer, &n64Vertices[3], &blendFlags);
+    VCRenderer_AddVertex(renderer,
+                         &n64Vertices[0],
+                         &blendFlags,
+                         VC_TRIANGLE_MODE_TEXTURE_RECTANGLE,
+                         0.0);
+    VCRenderer_AddVertex(renderer,
+                         &n64Vertices[1],
+                         &blendFlags,
+                         VC_TRIANGLE_MODE_TEXTURE_RECTANGLE,
+                         0.0);
+    VCRenderer_AddVertex(renderer,
+                         &n64Vertices[3],
+                         &blendFlags,
+                         VC_TRIANGLE_MODE_TEXTURE_RECTANGLE,
+                         0.0);
+    VCRenderer_AddVertex(renderer,
+                         &n64Vertices[1],
+                         &blendFlags,
+                         VC_TRIANGLE_MODE_TEXTURE_RECTANGLE,
+                         0.0);
+    VCRenderer_AddVertex(renderer,
+                         &n64Vertices[2],
+                         &blendFlags,
+                         VC_TRIANGLE_MODE_TEXTURE_RECTANGLE,
+                         0.0);
+    VCRenderer_AddVertex(renderer,
+                         &n64Vertices[3],
+                         &blendFlags,
+                         VC_TRIANGLE_MODE_TEXTURE_RECTANGLE,
+                         0.0);
 
 	gSP.textureTile[0] = &gDP.tiles[gSP.texture.tile];
 	gSP.textureTile[1] = &gDP.tiles[gSP.texture.tile < 7 ? gSP.texture.tile + 1 : gSP.texture.tile];

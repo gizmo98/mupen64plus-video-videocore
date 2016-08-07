@@ -9,7 +9,7 @@
 #include <GL/glew.h>
 #endif
 
-#ifdef DEBUG
+#ifdef VCDEBUG
 #define GL(func) \
     do { \
         func; \
@@ -26,7 +26,6 @@ struct VCProgram {
     GLuint vertexShader;
     GLuint fragmentShader;
     GLuint program;
-    GLuint vbo;
 };
 
 #endif

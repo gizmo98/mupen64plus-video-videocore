@@ -22,6 +22,7 @@ struct VCDebugStats {
     VCDebugStat trianglesDrawn;
     VCDebugStat batches;
     VCDebugStat texturesUploaded;
+    VCDebugStat programsCreated;
     VCDebugStat prepareTime;
     VCDebugStat drawTime;
     VCDebugStat viRate;
@@ -45,7 +46,7 @@ struct VCDebugger {
 };
 
 void VCDebugger_Init(VCDebugger *debugger, VCRenderer *renderer);
-void VCDebugger_DrawDebugOverlay(VCDebugger *debugger);
+void VCDebugger_DrawDebugOverlay(VCDebugger *debugger, const VCSize2u *windowSize);
 void VCDebugger_NewFrame(VCDebugger *debugger);
 void VCDebugger_AddSample(VCDebugger *debugger, VCDebugStat *stat, uint32_t newSample);
 void VCDebugger_IncrementSample(VCDebugger *debugger, VCDebugStat *stat);

@@ -20,7 +20,7 @@
 #define CELL_WIDTH                  12
 #define GLYPHS_PER_FONT             100
 
-#define DEBUG_COUNTERS              6
+#define DEBUG_COUNTERS              7
 #define TAB_STOP                    24
 #define WINDOW_WIDTH                82
 
@@ -223,6 +223,7 @@ void VCDebugger_Init(VCDebugger *debugger, VCRenderer *renderer) {
     VCDebugger_InitStat(&debugger->stats.trianglesDrawn);
     VCDebugger_InitStat(&debugger->stats.batches);
     VCDebugger_InitStat(&debugger->stats.texturesUploaded);
+    VCDebugger_InitStat(&debugger->stats.programsCreated);
     VCDebugger_InitStat(&debugger->stats.prepareTime);
     VCDebugger_InitStat(&debugger->stats.drawTime);
     VCDebugger_InitStat(&debugger->stats.viRate);
@@ -413,7 +414,9 @@ static uint32_t VCDebugger_MovingAverageOfVIPerSecond(VCDebugger *debugger) {
     return samples * 1000 / elapsed;
 }
 
-void VCDebugger_DrawDebugOverlay(VCDebugger *debugger) {
+void VCDebugger_DrawDebugOverlay(VCDebugger *debugger, const VCSize2u *windowSize) {
+    GL(glViewport(0, 0, windowSize->width, windowSize->height));
+
     VCConfig *config = VCConfig_SharedConfig();
     VCPoint2i position = {
         (HORIZONTAL_MARGIN + TAB_STOP) * SCALE,
@@ -426,7 +429,7 @@ void VCDebugger_DrawDebugOverlay(VCDebugger *debugger) {
                              -24,
                              &position);
     VCDebugger_DrawDebugStat(debugger,
-                             "ms rendering",
+                             "ms render",
                              VCDebugger_MovingAverageOfStat(debugger, &debugger->stats.drawTime),
                              12,
                              16,
@@ -446,7 +449,14 @@ void VCDebugger_DrawDebugOverlay(VCDebugger *debugger) {
                              15,
                              &position);
     VCDebugger_DrawDebugStat(debugger,
-                             "batches",
+                             "new shaders",
+                             VCDebugger_MovingAverageOfStat(debugger,
+                                                            &debugger->stats.programsCreated),
+                             3,
+                             5,
+                             &position);
+    VCDebugger_DrawDebugStat(debugger,
+                             "draw calls",
                              VCDebugger_MovingAverageOfStat(debugger,
                                                             &debugger->stats.batches),
                              10,
@@ -473,6 +483,7 @@ void VCDebugger_NewFrame(VCDebugger *debugger) {
         VCDebugger_AdvanceSampleWindow(debugger, &debugger->stats.trianglesDrawn);
         VCDebugger_AdvanceSampleWindow(debugger, &debugger->stats.batches);
         VCDebugger_AdvanceSampleWindow(debugger, &debugger->stats.texturesUploaded);
+        VCDebugger_AdvanceSampleWindow(debugger, &debugger->stats.programsCreated);
         VCDebugger_AdvanceSampleWindow(debugger, &debugger->stats.prepareTime);
         VCDebugger_AdvanceSampleWindow(debugger, &debugger->stats.drawTime);
         VCDebugger_AdvanceSampleWindow(debugger, &debugger->stats.viRate);

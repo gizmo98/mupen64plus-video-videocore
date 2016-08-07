@@ -2,6 +2,10 @@
 //
 // Copyright (c) 2016 The mupen64plus-video-videocore Authors
 
+#ifdef __linux__
+#include <linux/limits.h>
+#endif
+
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -9,14 +13,6 @@
 #include "VCConfig.h"
 #include "VCUtils.h"
 #include "toml.h"
-
-#ifdef __linux__
-#include <linux/limits.h>
-#endif
-
-#ifdef VC
-#include <bcm_host.h>
-#endif
 
 #define VC_DEFAULT_DISPLAY_WIDTH        1920
 #define VC_DEFAULT_DISPLAY_HEIGHT       1080
@@ -72,21 +68,8 @@ static char *VCConfig_GetString(const toml::Value &topValue,
 }
 
 void VCConfig_Read(VCConfig *config) {
-#ifdef VC
-    unsigned int fb_width;
-    unsigned int fb_height;
-    bcm_host_init();
-    if (graphics_get_display_size(0 /* LCD */, &fb_width, &fb_height) < 0)
-        std::cerr << "error: failed to get display size" << std::endl;
-    else {
-        config->displayWidth = fb_width;
-        config->displayHeight = fb_height;
-    }
-#endif
-
     char *path = (char *)malloc(PATH_MAX + 1);
 
-    std::ifstream input;
     const char *configHome = getenv("XDG_CONFIG_HOME");
     if (configHome == NULL || configHome[0] == '\0') {
         configHome = ".config";
@@ -94,12 +77,11 @@ void VCConfig_Read(VCConfig *config) {
         if (home == NULL)
             home = ".";
         snprintf(path, PATH_MAX, "%s/.config/mupen64plus/videocore.conf", home);
-        input.open(path);
     } else {
         snprintf(path, PATH_MAX, "%s/mupen64plus/videocore.conf", configHome);
-        input.open(path);
     }
 
+    std::ifstream input(path);
     if (input.fail()) {
         const char *configDirsLocation = getenv("XDG_CONFIG_DIRS");
         if (configDirsLocation == NULL || configDirsLocation[0] == '\0')
@@ -130,10 +112,8 @@ void VCConfig_Read(VCConfig *config) {
     }
 
     const toml::Value &topValue = parseResult.value;
-#ifndef VC
     config->displayWidth = VCConfig_GetInt(topValue, "display.width", VC_DEFAULT_DISPLAY_WIDTH);
     config->displayHeight = VCConfig_GetInt(topValue, "display.height", VC_DEFAULT_DISPLAY_HEIGHT);
-#endif
     config->debugDisplay = VCConfig_GetBool(topValue,
                                             "debug.display",
                                             VC_DEFAULT_DEBUG_DISPLAY);
