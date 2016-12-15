@@ -1,6 +1,4 @@
-#ifndef min
-# define min(a,b) ((a) < (b) ? (a) : (b))
-#endif
+#include <algorithm>
 #include <math.h>
 #include <stdint.h>
 #include "glN64.h"
@@ -103,7 +101,7 @@ void RSP_ProcessDList()
 	RSP.halt = FALSE;
 	RSP.busy = TRUE;
 
-	gSP.matrix.stackSize = min( 32, *(u32*)&DMEM[0x0FE4] >> 6 );
+	gSP.matrix.stackSize = std::min( (u32)32, *(u32*)&DMEM[0x0FE4] >> 6 );
 	gSP.matrix.modelViewi = 0;
 	gSP.changed |= CHANGED_MATRIX;
 
